@@ -1,8 +1,8 @@
 require "rack"
+require_relative "./application"
 
-app = -> (env) do
-  [200, { "Content-Type" => "text/plain" }, ["Hello World!"]]
-end
+app = Application.new
 
 use Rack::Reloader
-Rack::Handler::WEBrick.run app
+use LoggingMiddleware
+Rack::Handler::WEBrick.run LoggingMiddleware.new(app)
