@@ -1,21 +1,14 @@
-class Application
-  def call(env)
-    [200, { "Content-Type" => "text/plain" }, ["Hello World!\n"]]
+require "./framework"
+
+APP = Framework.new do
+  # GET /
+  get "/" do |params|
+    "This is the root path"
+  end
+
+  # GET /users/morty
+  # GET /users/matt
+  get "/users/:username" do |params|
+    "This is a user called #{params.fetch("username")}"
   end
 end
-
-class LoggingMiddleware
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    before = Time.now.to_i
-    status, headers, body = @app.call(env)
-    after = Time.now.to_i
-    log_message = "App took #{after - before} seconds.\n"
-
-    [status, headers, body << log_message]
-  end
-end
-

@@ -1,8 +1,9 @@
 require "rack"
 require_relative "./application"
 
-app = Application.new
+app = Rack::Builder.new do
+  use Rack::Reloader, 0    
+  run APP
+end
 
-use Rack::Reloader
-use LoggingMiddleware
-Rack::Handler::WEBrick.run LoggingMiddleware.new(app)
+Rack::Handler::WEBrick.run app
