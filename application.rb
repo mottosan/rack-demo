@@ -1,14 +1,42 @@
-require "./framework"
+require "./frank"
+require "./user"
 
-APP = Framework.new do
+APP = Frank.new do
   # GET /
   get "/" do |params|
     "This is the root path"
   end
 
-  # GET /users/morty
-  # GET /users/matt
-  get "/users/:username" do |params|
-    "This is a user called #{params.fetch("username")}"
+  # GET /users
+  get "/users" do |params|
+    User.find_all
+  end
+
+  # GET /users/0
+  get "/users/:user_id" do |params|
+    User.find_by_id(params.fetch("user_id"))
+  rescue => e
+    e.message
+  end
+
+  # POST /users
+  post "/users" do |params|
+    User.create(params)
+  rescue => e
+    e.message
+  end
+
+  # PUT /users/1
+  put "/users/:user_id" do |params|
+    User.update(params.fetch("user_id"), params)
+  rescue => e
+    e.message
+  end
+
+  # DELETE /users/1
+  delete "/users/:user_id" do |params|
+    User.delete(params.fetch("user_id"))
+  rescue => e
+    e.message
   end
 end

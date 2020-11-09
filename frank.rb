@@ -1,4 +1,4 @@
-class Framework
+class Frank
   def initialize(&block)
     @routes = RouteTable.new(&block)
   end
@@ -22,20 +22,39 @@ class RouteTable
   end
 
   def get(path, &block)
-    @routes << Route.new(path, block)
+    add_route("get", path, block)
+  end
+
+  def post(path, &block)
+    add_route("post", path, block)
+  end
+
+  def put(path, &block)
+    add_route("put", path, block)
+  end
+
+  def delete(path, &block)
+    add_route("delete", path, block)
   end
 
   def each(&block)
     @routes.each(&block)
   end
+
+  private
+
+  def add_route(method, path, block)
+    @routes << Route.new(method, path, block)
+  end
 end
 
-class Route < Struct.new(:path, :block)
+class Route < Struct.new(:method, :path, :block)
   def match(request)
     route_path_components = path.split("/")
     request_path_components = request.path.split("/")
 
     return nil unless route_path_components.length == request_path_components.length
+    return nil unless request.request_method.downcase == method.downcase
 
     params = {}
 
@@ -45,6 +64,8 @@ class Route < Struct.new(:path, :block)
       if is_var
         key = route_component.sub(%r{\A:}, "")
         params[key] = path_component
+      elsif request.request_method == "POST" || request.request_method == "PUT"
+        params.merge!(request.params)
       else
         return nil unless route_component == path_component
       end
