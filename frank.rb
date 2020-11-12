@@ -7,9 +7,9 @@ class Frank
     request = Rack::Request.new(env)
 
     @routes.each do |route|
-      status, content = route.match(request)
+      response = route.match(request)
 
-      return [status, { "Content-Type" => "text/plain" }, [content.to_s]] if content
+      return [response.status, response.headers, response.body] if response
     end
     [404, {}, ["route #{request.path} not found"]]
   end
@@ -41,10 +41,28 @@ class RouteTable
     @routes.each(&block)
   end
 
+  def respond_with(content, status: 200, headers: { "Content-Type" => "text/plain" })
+    Response.new(content, status, headers)
+  end
+
   private
 
   def add_route(method, path, block)
     @routes << Route.new(method, path, block)
+  end
+end
+
+class Response
+  attr_reader :status, :headers
+
+  def initialize(content, status, headers)
+    @content = content
+    @status = status
+    @headers = headers
+  end
+
+  def body
+    [@content.to_s]
   end
 end
 

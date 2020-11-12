@@ -19,7 +19,7 @@ class CachingMiddleware
         if status.to_s =~ /20[01]/
           CACHE[req.path] = [status, headers, body]
         else
-          puts "[#{self.class}] 2xx status - not caching"
+          puts "[#{self.class}] Not 2xx status - not caching"
         end
       end
       return [status, headers, body]
