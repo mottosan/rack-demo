@@ -1,3 +1,5 @@
+require "./errors"
+
 module Datastore
   def self.included(klass)
     klass.extend(ClassMethods)
@@ -9,7 +11,7 @@ module Datastore
       if val = DB[id]
         val
       else
-        raise "object with id #{id} not found"
+        raise ObjectNotFound, "object with id #{id} not found"
       end
     end
 
@@ -26,7 +28,7 @@ module Datastore
       if val = DB[id]
         DB[id] = val.merge params.select { |k| val.keys.include? k }
       else
-        raise "object with id #{id} not found"
+        raise ObjectNotFound, "object with id #{id} not found"
       end
     end
 
@@ -34,7 +36,7 @@ module Datastore
       if val = DB[id]
         DB.delete(id)
       else
-        raise "object with id #{id} not found"
+        raise ObjectNotFound, "object with id #{id} not found"
       end
     end
   end

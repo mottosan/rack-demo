@@ -7,9 +7,9 @@ class Frank
     request = Rack::Request.new(env)
 
     @routes.each do |route|
-      content = route.match(request)
+      status, content = route.match(request)
 
-      return [200, { "Content-Type" => "text/plain" }, [content.to_s]] if content
+      return [status, { "Content-Type" => "text/plain" }, [content.to_s]] if content
     end
     [404, {}, ["route #{request.path} not found"]]
   end
